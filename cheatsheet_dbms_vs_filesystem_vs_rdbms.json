@@ -1,0 +1,226 @@
+{
+  "concept": {
+    "code": "C1",
+    "title": "DBMS vs File System, DBMS vs RDBMS",
+    "subject": "Database Management Systems",
+    "module": "DBMS Fundamentals",
+    "difficulty": "Easy",
+    "estimatedCheatSheetRevisionTimeMinutes": 6,
+    "prerequisites": ["Basic idea of data, files and tables"],
+    "learningObjectives": [
+      "Explain at least five problems of file-based data management that a DBMS solves",
+      "Distinguish a DBMS from a file system in terms of redundancy, access, integrity, concurrency, recovery and security",
+      "Define an RDBMS and state what the relational model adds on top of a general DBMS",
+      "Compare DBMS and RDBMS using precise (not oversimplified) criteria",
+      "Decide, given a scenario, whether a file system, a general DBMS or an RDBMS is the appropriate choice"
+    ],
+    "keySkillsGained": ["Comparing storage approaches", "Justifying why a DBMS is used", "Answering the classic interview comparison questions"]
+  },
+
+  "studentContent": {
+    "cheatSheet": {
+      "oneLineDefinition": {
+        "dbms": "A DBMS is software that lets you define, store, query, update and protect a shared collection of data, so applications do not manage raw files themselves.",
+        "fileSystem": "A file system stores data as separate files, and each application decides the format and the logic to read and write them.",
+        "rdbms": "An RDBMS is a DBMS built on the relational model: data lives in tables (relations) of rows and columns, linked through keys and queried with SQL."
+      },
+
+      "coreIdea": [
+        "File system: the OS stores and finds files, but it knows nothing about what is inside them. Meaning, rules and format live in application code.",
+        "DBMS: the data and its rules (structure, constraints, access control) live in one managed layer that every application shares.",
+        "RDBMS: a DBMS that uses one specific model, the relational model. DBMS is the broad category and RDBMS is a type within it."
+      ],
+
+      "keyTerms": [
+        { "term": "Data redundancy", "meaning": "The same data stored in multiple places." },
+        { "term": "Data inconsistency", "meaning": "Copies of the same data disagree, usually after one copy is updated and others are not." },
+        { "term": "Data independence", "meaning": "Changing how data is stored or structured without rewriting the applications that use it." },
+        { "term": "Integrity constraint", "meaning": "A rule the data must always satisfy (e.g. unique ID, age > 0, valid foreign key)." },
+        { "term": "Transaction", "meaning": "A group of operations treated as one all-or-nothing unit." },
+        { "term": "Relation / table", "meaning": "A set of rows (tuples) with the same columns (attributes)." },
+        { "term": "Key", "meaning": "Attribute(s) that identify rows (primary key) or link tables (foreign key)." },
+        { "term": "Query language", "meaning": "A declarative way to ask for data (SQL for relational systems)." }
+      ],
+
+      "mentalModel": {
+        "analogy": "File system is a room full of loose paper folders where every employee invents their own filing rules. DBMS is a records office with a clerk, one set of rules, a lock on the door and a log of every change. RDBMS is a records office that insists every record be a row in a standard form and that forms reference each other by ID.",
+        "memoryHook": "File system = storage only. DBMS = storage + management. RDBMS = management using tables and relationships."
+      },
+
+      "importantRules": [
+        "Every RDBMS is a DBMS, but not every DBMS is an RDBMS.",
+        "A file system provides storage and retrieval of files. It does not provide query processing, transactions or constraint enforcement.",
+        "In a file system, constraints and access logic are written inside each application, so changing a file format forces changing every program that reads it.",
+        "A DBMS reduces and controls redundancy. It does not eliminate it. Replication, indexes and denormalization are deliberate redundancy.",
+        "The relational model adds: tables, keys, relationships via foreign keys, a standard language (SQL), and integrity rules over those structures.",
+        "Non-relational systems (document, key-value, graph, hierarchical, network) are DBMSs but not RDBMSs."
+      ],
+
+      "comparisonTables": [
+        {
+          "id": "T1",
+          "title": "File System vs DBMS",
+          "columns": ["Aspect", "File System", "DBMS"],
+          "rows": [
+            ["Redundancy and consistency", "Same data duplicated across files, copies drift apart", "Data kept centrally, redundancy controlled, consistency enforced"],
+            ["Data access", "Write a new program for each new question", "Ask ad hoc questions with a query language"],
+            ["Data independence", "Programs depend on file format and layout", "Storage changes do not force application changes"],
+            ["Integrity", "Rules hard-coded in each application, easy to miss or conflict", "Rules declared once (keys, constraints) and enforced for all users"],
+            ["Atomicity of updates", "A crash mid-update can leave data half-changed", "Transactions: all-or-nothing, with recovery after failure"],
+            ["Concurrent access", "Simultaneous writes can overwrite each other", "Concurrency control (locking, isolation) keeps results correct"],
+            ["Security", "Mostly file-level permissions from the OS", "Fine-grained control per user, table, view or operation"],
+            ["Cost and complexity", "Cheap and simple, fine for small or single-user needs", "Needs software, design and administration, pays off as data and users grow"]
+          ]
+        },
+        {
+          "id": "T2",
+          "title": "DBMS vs RDBMS",
+          "columns": ["Aspect", "DBMS (general)", "RDBMS"],
+          "rows": [
+            ["Scope", "Any software managing databases, any data model", "A DBMS specifically based on the relational model"],
+            ["Data model", "Hierarchical, network, document, key-value, graph, relational, ...", "Relations (tables) of rows and columns"],
+            ["Relationships", "Model dependent (pointers, links, nesting, edges)", "Expressed through keys, mainly primary and foreign keys"],
+            ["Query language", "Varies by system", "SQL (standardized)"],
+            ["Integrity", "Varies by system", "Entity and referential integrity, domain and other constraints"],
+            ["Schema design", "Varies, may be flexible or schema-less", "Typically schema-first, normalization used to reduce redundancy"],
+            ["Transactions", "Varies, not guaranteed in every DBMS", "Typically ACID transactions"],
+            ["Examples", "MongoDB, Redis, Neo4j, IMS (hierarchical), plus relational systems", "MySQL, PostgreSQL, Oracle, SQL Server, SQLite"]
+          ]
+        }
+      ],
+
+      "workedExample": {
+        "scenario": "A college stores student data in two text files: students.txt (ID, name, department name) and marks.txt (ID, name, department name, subject, marks). A department is renamed from 'CSE' to 'Computer Science'.",
+        "fileSystemWalkthrough": [
+          "The department name is stored in many rows across both files (redundancy).",
+          "A program updates students.txt but crashes before updating marks.txt, so the two files now disagree (inconsistency, no atomicity).",
+          "Asking 'average marks per department' needs a new program, because no query language exists (difficult access).",
+          "Nothing stops a marks row for an ID that is not in students.txt (integrity enforced only if every program remembers to check)."
+        ],
+        "dbmsWalkthrough": [
+          "Store departments once and reference them by ID, so the rename is a single update.",
+          "The update runs in a transaction, so either everything changes or nothing does.",
+          "'Average marks per department' is one query.",
+          "A foreign key constraint rejects marks for non-existent students."
+        ],
+        "rdbmsAngle": "In an RDBMS, the same design is three tables: Department(dept_id PK, name), Student(student_id PK, name, dept_id FK), Marks(student_id FK, subject, marks). The foreign keys are the relationships and SQL joins them back together.",
+        "takeaway": "The DBMS did not magically change the data. It moved the rules from scattered application code into one managed layer."
+      },
+
+      "importantDiagram": {
+        "visualIds": ["V1", "V2"],
+        "note": "V1 shows applications tied to separate files vs sharing one DBMS. V2 shows DBMS as the broad category with RDBMS nested inside it."
+      },
+
+      "commonMistakes": [
+        "Saying a DBMS removes redundancy completely. Correct: it controls and minimizes it.",
+        "Saying a file system 'cannot store data properly'. Correct: it stores files fine, the weakness is lack of management features (query, constraints, transactions, concurrency control).",
+        "Listing the file system problems without linking each problem to the DBMS feature that solves it.",
+        "Treating DBMS and RDBMS as unrelated or as equal. RDBMS is a subset of DBMS.",
+        "Saying 'DBMS cannot have tables'. Correct: tables are the relational way of organizing data, other models organize data differently.",
+        "Saying RDBMS = 'uses SQL' only. The defining part is the relational model; SQL is the language that comes with it.",
+        "Mixing up 'database' (the data) and 'DBMS' (the software managing it)."
+      ],
+
+      "interviewTraps": [
+        {
+          "trap": "'Is MySQL a DBMS or an RDBMS?'",
+          "answer": "Both. It is a DBMS because it manages databases, and an RDBMS because it uses the relational model."
+        },
+        {
+          "trap": "'Is MongoDB a DBMS?'",
+          "answer": "Yes, a document-oriented DBMS. It is not an RDBMS because it is not based on the relational model."
+        },
+        {
+          "trap": "'Why not just use files?'",
+          "answer": "Files work for small, single-user, simple cases. Once you need shared access, consistency, queries, recovery and security, you would end up rebuilding a DBMS in application code."
+        },
+        {
+          "trap": "'DBMS stores data in files, so what is the difference from a file system?'",
+          "answer": "A DBMS may use files internally, but it adds a management layer on top (query processing, transactions, concurrency, recovery, constraints, security). The application never touches the files directly."
+        },
+        {
+          "trap": "Textbook tables often say 'DBMS: single user, no relationships; RDBMS: multi-user, relationships'.",
+          "answer": "That describes old desktop or file-based DBMSs. Modern DBMSs, relational or not, support many users, so contrast on data model and relational features rather than on 'single vs multi-user'."
+        }
+      ],
+
+      "quickRecall": {
+        "title": "Remember these 5 things",
+        "points": [
+          "File system = stores files only. Rules and logic sit in application code, which causes redundancy, inconsistency, hard access, weak integrity, no atomicity and unsafe concurrency.",
+          "DBMS = shared, managed data with a query language, constraints, transactions, concurrency control, recovery and security.",
+          "Data independence is a key DBMS benefit: change storage without changing applications.",
+          "RDBMS = DBMS + relational model (tables, keys, SQL, relational integrity).",
+          "Every RDBMS is a DBMS, not every DBMS is an RDBMS (e.g. MongoDB, Neo4j)."
+        ]
+      },
+
+      "oneMinuteRevision": "Files store data, but each program must handle format, rules and safety itself, so you get duplicates, mismatched copies, one-off programs for every question, missing checks, half-finished updates and clashes between users. A DBMS pulls all of that into one managed layer shared by every application: queries, constraints, transactions, concurrency control, recovery, security and data independence. An RDBMS is a DBMS that organizes data as tables connected by keys and queried with SQL. So: file system < DBMS, and RDBMS is one kind of DBMS."
+    },
+
+    "visuals": [
+      {
+        "id": "V1",
+        "title": "Separate files per application vs shared DBMS",
+        "purpose": "Show why scattered files cause redundancy and why a central DBMS layer fixes it.",
+        "placement": "After the comparison table T1 or the worked example",
+        "takeaway": "In a file system each application owns its data. In a DBMS all applications go through one managed layer.",
+        "accessibilityDescription": "Two side-by-side diagrams. Left: three applications each connected directly to their own file, with a duplicate 'Department' label appearing in two files. Right: the same three applications connected to a single DBMS box, which connects to one shared database."
+      },
+      {
+        "id": "V2",
+        "title": "Where RDBMS sits inside DBMS",
+        "purpose": "Make the subset relationship obvious.",
+        "placement": "Beside comparison table T2",
+        "takeaway": "RDBMS is one kind of DBMS, not a competitor to it.",
+        "accessibilityDescription": "A large rounded box labelled DBMS containing a smaller box labelled RDBMS (MySQL, PostgreSQL, Oracle, SQL Server) and other boxes labelled Document (MongoDB), Key-Value (Redis), Graph (Neo4j) and Hierarchical (IMS)."
+      }
+    ]
+  },
+
+  "platformMetadata": {
+    "contentVersion": "1.0",
+    "scope": "Cheat sheet only. Video already exists. Overview, quiz, checks and interview packs not generated in this pass.",
+    "inputsNotSupplied": ["Research Corpus", "Validation Report", "Content Bible", "Source Register", "Correction Log"],
+    "confidence": "High for core definitions and the file-system problem list (standard textbook set). Medium for example systems and the 'typically ACID' wording, which should be checked against the Source Register when it is available.",
+    "uncertaintyFlags": [
+      "The concept code C1 is assumed from the spec's example and should be confirmed.",
+      "Many Indian-syllabus notes compare DBMS vs RDBMS using 'single user vs multi-user' and 'no relationships vs relationships'. The cheat sheet deliberately avoids this because it is not technically reliable for modern DBMSs. Confirm this matches the platform's Content Bible.",
+      "Whether the video uses the same 7-problem file-system list should be checked so terminology matches."
+    ],
+    "fileSystemProblemToDbmsFeatureMap": {
+      "Redundancy and inconsistency": "Centralized data, controlled redundancy, constraints",
+      "Difficult data access": "Query language",
+      "Data isolation": "Common schema and data model",
+      "Integrity problems": "Declarative constraints",
+      "Atomicity problems": "Transactions and recovery",
+      "Concurrent access anomalies": "Concurrency control and isolation",
+      "Security problems": "Authorization and access control"
+    },
+    "visualImplementationSpecs": {
+      "V1": {
+        "format": "SVG or CSS/HTML diagram",
+        "structure": "Two panels. Left panel: App A, App B, App C, each with an arrow to its own file icon (students.txt, marks.txt, fees.txt). Highlight the repeated 'dept name' in two files in a warning colour. Right panel: App A, B, C with arrows into a central DBMS box, then one arrow to a database cylinder.",
+        "labels": ["File system", "DBMS", "Duplicated data", "Single managed layer"],
+        "relationships": "Left arrows are one-to-one app-to-file. Right arrows converge on the DBMS.",
+        "style": "Clean vector, high contrast, readable at mobile width"
+      },
+      "V2": {
+        "format": "CSS/HTML nested diagram (Venn-style containment)",
+        "structure": "Outer box DBMS. Inner highlighted box RDBMS with example product names. Sibling boxes for non-relational types.",
+        "labels": ["DBMS", "RDBMS", "Document", "Key-Value", "Graph", "Hierarchical"],
+        "relationships": "Containment only, no arrows",
+        "style": "Clean vector, RDBMS box in accent colour"
+      }
+    },
+    "suggestedQuizWeakAreas": [
+      "File processing problems",
+      "DBMS features and mechanisms",
+      "Data independence",
+      "RDBMS definition and relational model",
+      "DBMS vs RDBMS distinction",
+      "Choosing the right storage approach"
+    ]
+  }
+}

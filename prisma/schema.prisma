@@ -1,0 +1,249 @@
+// This is your Prisma schema file
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  ADMIN
+  // Future: INSTRUCTOR, MENTOR, MODERATOR
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ConceptStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum AssessmentType {
+  CONCEPT_QUIZ
+  // Future: SUBJECT_PRE_ASSESSMENT, SUBJECT_FINAL_ASSESSMENT,
+  // MODULE_CHECKPOINT, INTERVIEW_PRACTICE
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+  EVALUATED
+  PENDING_MANUAL_REVIEW
+}
+
+enum QuestionType {
+  MCQ
+  MATCHING
+  SHORT_ANSWER
+  SCENARIO
+  OUTPUT_PREDICTION
+  MISCONCEPTION_DETECTION
+  COMPARISON
+}
+
+// ─── User ─────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  progress         UserConceptProgress[]
+  assessmentAttempts AssessmentAttempt[]
+
+  @@map("users")
+}
+
+// ─── Curriculum ───────────────────────────────────────────────────────────────
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  icon        String?
+  order       Int
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  modules Module[]
+
+  @@map("subjects")
+}
+
+model Module {
+  id          String   @id @default(cuid())
+  subjectId   String
+  name        String
+  slug        String   @unique
+  description String
+  order       Int
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subject   Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  concepts  Concept[]
+
+  @@map("modules")
+}
+
+model Concept {
+  id               String     @id @default(cuid())
+  moduleId         String
+  conceptCode      String     // e.g. "C1"
+  title            String
+  slug             String     @unique
+  description      String
+  estimatedMinutes Int
+  difficulty       Difficulty @default(BEGINNER)
+  order            Int
+  isPublished      Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  module      Module               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  content     ConceptContent?
+  assessments Assessment[]
+  progress    UserConceptProgress[]
+
+  @@unique([moduleId, conceptCode])
+  @@map("concepts")
+}
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+model ConceptContent {
+  id        String   @id @default(cuid())
+  conceptId String   @unique
+  blocks    Json     // JSONB array of ContentBlock
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  concept Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@map("concept_contents")
+}
+
+// ─── Assessment ───────────────────────────────────────────────────────────────
+
+model Assessment {
+  id          String         @id @default(cuid())
+  conceptId   String
+  type        AssessmentType @default(CONCEPT_QUIZ)
+  title       String
+  description String?
+  timeLimit   Int?           // minutes, null = untimed
+  passingScore Int           @default(70) // percentage
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  concept   Concept     @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  questions Question[]
+  attempts  AssessmentAttempt[]
+
+  @@map("assessments")
+}
+
+model Question {
+  id           String       @id @default(cuid())
+  assessmentId String
+  type         QuestionType
+  prompt       String
+  // options stored as JSONB: [{ id, text }] — NO correctAnswer here
+  options      Json?
+  // correctAnswer & answerKey stored in separate server-side field
+  // NEVER sent to client
+  correctAnswer Json?       // e.g. { "optionId": "a" } or { "pairs": [...] }
+  explanation   String?     // shown AFTER submission
+  points        Int         @default(1)
+  order         Int
+  tags          String[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  answers    AssessmentAnswer[]
+
+  @@map("questions")
+}
+
+// ─── Attempts ─────────────────────────────────────────────────────────────────
+
+model AssessmentAttempt {
+  id           String        @id @default(cuid())
+  userId       String
+  assessmentId String
+  status       AttemptStatus @default(IN_PROGRESS)
+  score        Float?        // percentage 0-100
+  rawScore     Float?        // points earned
+  maxScore     Float?        // total points possible
+  startedAt    DateTime      @default(now())
+  submittedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  answers    AssessmentAnswer[]
+
+  @@map("assessment_attempts")
+}
+
+model AssessmentAnswer {
+  id         String    @id @default(cuid())
+  attemptId  String
+  questionId String
+  response   Json      // student's raw response
+  isCorrect  Boolean?  // null for SHORT_ANSWER pending review
+  score      Float     @default(0)
+  createdAt  DateTime  @default(now())
+
+  attempt  AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@map("assessment_answers")
+}
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+
+model UserConceptProgress {
+  id             String        @id @default(cuid())
+  userId         String
+  conceptId      String
+  status         ConceptStatus @default(NOT_STARTED)
+  startedAt      DateTime?
+  completedAt    DateTime?
+  lastAccessedAt DateTime      @default(now())
+  bestScore      Float?        // best quiz score percentage
+  attemptsCount  Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  concept Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, conceptId])
+  @@map("user_concept_progress")
+}
