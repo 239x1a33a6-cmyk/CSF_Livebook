@@ -80,45 +80,48 @@ export const assessmentService = {
         });
 
         // 5. Update concept progress
-        const conceptId = assessment.concept.id;
         const passed = scorePercentage >= assessment.passingScore;
 
-        await prisma.userConceptProgress.upsert({
-            where: { userId_conceptId: { userId, conceptId } },
-            create: {
-                userId,
-                conceptId,
-                status: passed ? 'COMPLETED' : 'IN_PROGRESS',
-                startedAt: new Date(),
-                completedAt: passed ? new Date() : null,
-                lastAccessedAt: new Date(),
-                bestScore: scorePercentage,
-                attemptsCount: 1,
-            },
-            update: {
-                lastAccessedAt: new Date(),
-                attemptsCount: { increment: 1 },
-                ...(passed
-                    ? {
-                        status: 'COMPLETED',
-                        completedAt: new Date(),
-                    }
-                    : {}),
-                bestScore: {
-                    // Keep the best score — handled in a separate update below
-                },
-            },
-        });
+        if (assessment.concept) {
+            const conceptId = assessment.concept.id;
 
-        // Update bestScore separately (can't use conditional in upsert set)
-        await prisma.userConceptProgress.updateMany({
-            where: {
-                userId,
-                conceptId,
-                OR: [{ bestScore: null }, { bestScore: { lt: scorePercentage } }],
-            },
-            data: { bestScore: scorePercentage },
-        });
+            await prisma.userConceptProgress.upsert({
+                where: { userId_conceptId: { userId, conceptId } },
+                create: {
+                    userId,
+                    conceptId,
+                    status: passed ? 'COMPLETED' : 'IN_PROGRESS',
+                    startedAt: new Date(),
+                    completedAt: passed ? new Date() : null,
+                    lastAccessedAt: new Date(),
+                    bestScore: scorePercentage,
+                    attemptsCount: 1,
+                },
+                update: {
+                    lastAccessedAt: new Date(),
+                    attemptsCount: { increment: 1 },
+                    ...(passed
+                        ? {
+                            status: 'COMPLETED',
+                            completedAt: new Date(),
+                        }
+                        : {}),
+                    bestScore: {
+                        // Keep the best score — handled in a separate update below
+                    },
+                },
+            });
+
+            // Update bestScore separately (can't use conditional in upsert set)
+            await prisma.userConceptProgress.updateMany({
+                where: {
+                    userId,
+                    conceptId,
+                    OR: [{ bestScore: null }, { bestScore: { lt: scorePercentage } }],
+                },
+                data: { bestScore: scorePercentage },
+            });
+        }
 
         // 6. Return result (with explanations, without answer keys)
         const questionsWithExplanations = await prisma.question.findMany({
@@ -159,7 +162,7 @@ export const assessmentService = {
         if (!attempt) throw new AppError('ATTEMPT_NOT_FOUND', 'Attempt not found', 404);
         if (attempt.userId !== userId) throw new AppError('FORBIDDEN', 'Access denied', 403);
 
-        const passed = attempt.score >= attempt.assessment.passingScore;
+        const passed = (attempt.score || 0) >= attempt.assessment.passingScore;
 
         return {
             attemptId: attempt.id,

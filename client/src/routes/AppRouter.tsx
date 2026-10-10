@@ -12,6 +12,7 @@ import { ModulePage } from '../pages/ModulePage';
 import { ConceptPage } from '../pages/ConceptPage';
 import { QuizPage } from '../pages/QuizPage';
 import { QuizResultPage } from '../pages/QuizResultPage';
+import { ContentManagerPage } from '../pages/admin/ContentManagerPage';
 
 export function AppRouter() {
     return (
@@ -33,6 +34,9 @@ export function AppRouter() {
                             <Route path="/concepts/:conceptSlug" element={<ConceptPage />} />
                             <Route path="/concepts/:conceptSlug/quiz" element={<QuizPage />} />
                             <Route path="/concepts/:conceptSlug/quiz/result/:attemptId" element={<QuizResultPage />} />
+
+                            {/* Admin Protected Routes */}
+                            <Route path="/admin/content" element={<ContentManagerPage />} />
                         </Route>
                     </Route>
 

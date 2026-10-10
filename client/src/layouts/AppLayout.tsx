@@ -11,26 +11,31 @@ export function AppLayout() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0b0c0c] flex flex-col">
+        <div className="min-h-screen flex flex-col relative w-full">
             {/* ── Top Nav ──────────────────────────────────────────── */}
-            <nav className="bg-[#0b0c0c] border-b border-gray-800 sticky top-0 z-40">
+            <nav className="glass-nav sticky top-0 z-40">
                 <div className="page-container flex items-center justify-between h-14">
                     {/* Logo */}
-                    <Link to="/dashboard" className="flex items-center gap-2 font-semibold text-gray-200 hover:text-brand-400 transition-colors">
+                    <Link to="/dashboard" className="flex items-center gap-2 font-semibold text-gray-900 hover:text-brand-600 transition-colors">
                         <span className="text-xl">⚡</span>
                         <span className="text-base">CS Fundamentals</span>
                     </Link>
 
                     {/* Right side */}
-                    <div className="flex items-center gap-3">
-                        <Link to="/dashboard" className="text-sm text-gray-400 hover:text-gray-200 transition-colors hidden sm:block">
+                    <div className="flex items-center gap-4">
+                        {user?.role === 'ADMIN' && (
+                            <Link to="/admin/content" className="text-[13px] font-black text-brand-600 hover:text-brand-700 transition-colors bg-brand-50 px-3 py-1.5 rounded border border-brand-100 hidden sm:block">
+                                Admin Console
+                            </Link>
+                        )}
+                        <Link to="/dashboard" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors hidden sm:block">
                             Dashboard
                         </Link>
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-400 hidden sm:block">{user?.name}</span>
+                        <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
+                            <span className="text-sm font-semibold text-gray-700 hidden sm:block">{user?.name}</span>
                             <button
                                 onClick={handleLogout}
-                                className="text-sm text-gray-400 hover:text-red-400 transition-colors"
+                                className="text-sm text-gray-600 hover:text-red-500 transition-colors"
                             >
                                 Logout
                             </button>
@@ -45,7 +50,7 @@ export function AppLayout() {
             </main>
 
             {/* ── Footer ───────────────────────────────────────────── */}
-            <footer className="border-t border-gray-800 py-4 mt-8 hidden">
+            <footer className="border-t border-gray-200 py-4 mt-8 hidden">
                 <div className="page-container text-center text-xs text-gray-500">
                     CS Fundamentals — Structured learning for engineers
                 </div>

@@ -21,6 +21,7 @@ export const progressService = {
                 modules: {
                     orderBy: { order: 'asc' },
                     include: {
+                        assessments: true,
                         concepts: {
                             orderBy: { order: 'asc' },
                             include: {
@@ -64,6 +65,12 @@ export const progressService = {
                     order: module.order,
                     isPublished: module.isPublished,
                     conceptCount: module.concepts.length,
+                    assessments: module.assessments.map(a => ({
+                        id: a.id,
+                        type: a.type,
+                        title: a.title,
+                        isPublished: a.isPublished
+                    })),
                     concepts: module.concepts.map((concept) => {
                         const prog = concept.progress[0];
                         return {

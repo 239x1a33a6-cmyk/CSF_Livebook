@@ -33,8 +33,8 @@ enum ConceptStatus {
 
 enum AssessmentType {
   CONCEPT_QUIZ
-  // Future: SUBJECT_PRE_ASSESSMENT, SUBJECT_FINAL_ASSESSMENT,
-  // MODULE_CHECKPOINT, INTERVIEW_PRACTICE
+  MODULE_ASSESSMENT
+  // Future: SUBJECT_PRE_ASSESSMENT, SUBJECT_FINAL_ASSESSMENT, INTERVIEW_PRACTICE
 }
 
 enum AttemptStatus {
@@ -102,6 +102,7 @@ model Module {
 
   subject   Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   concepts  Concept[]
+  assessments Assessment[]
 
   @@map("modules")
 }
@@ -122,6 +123,7 @@ model Concept {
 
   module      Module               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   content     ConceptContent?
+  resources   ConceptResource[]
   assessments Assessment[]
   progress    UserConceptProgress[]
 
@@ -148,7 +150,8 @@ model ConceptContent {
 
 model Assessment {
   id          String         @id @default(cuid())
-  conceptId   String
+  conceptId   String?
+  moduleId    String?
   type        AssessmentType @default(CONCEPT_QUIZ)
   title       String
   description String?
@@ -158,7 +161,8 @@ model Assessment {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
-  concept   Concept     @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  concept   Concept?    @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  module    Module?     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   questions Question[]
   attempts  AssessmentAttempt[]
 
@@ -246,4 +250,35 @@ model UserConceptProgress {
 
   @@unique([userId, conceptId])
   @@map("user_concept_progress")
+}
+
+// ─── Resource Extension ───────────────────────────────────────────────────────
+
+enum ResourceType {
+  VIDEO
+  CHEAT_SHEET
+}
+
+enum ResourceSource {
+  UPLOAD
+  URL
+  MARKDOWN
+  JSON_BLOCKS
+}
+
+model ConceptResource {
+  id          String         @id @default(cuid())
+  conceptId   String
+  type        ResourceType
+  source      ResourceSource
+  content     String?        // URL, relative file path, markdown text, etc.
+  metadata    Json?          // E.g., { duration, size, format, originalName }
+  isPublished Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  concept     Concept        @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+
+  @@unique([conceptId, type])
+  @@map("concept_resources")
 }

@@ -42,8 +42,8 @@ export function OnThisPageSidebar() {
     if (headings.length === 0) return null;
 
     return (
-        <div className="w-64 flex-shrink-0 border-l border-gray-800 bg-[#0b0c0c] h-[calc(100vh-3.5rem)] overflow-y-auto hidden lg:block p-6">
-            <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">
+        <div className="w-64 flex-shrink-0 border-l border-gray-200 bg-white h-[calc(100vh-3.5rem)] overflow-y-auto hidden lg:block p-6">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">
                 On This Page
             </h4>
             <ul className="space-y-2">
@@ -52,8 +52,8 @@ export function OnThisPageSidebar() {
                         <a
                             href={`#${h.id}`}
                             className={`block text-sm leading-snug transition-colors ${activeId === h.id
-                                ? 'text-brand-400 font-medium'
-                                : 'text-gray-500 hover:text-gray-200'
+                                ? 'text-brand-600 font-semibold'
+                                : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
                             {h.text}

@@ -18,7 +18,18 @@ export const conceptsService = {
             where: { userId_conceptId: { userId, conceptId: concept.id } },
         });
 
-        return { concept, progress };
+        // Get all published concepts in the module to find siblings
+        const siblings = await prisma.concept.findMany({
+            where: { moduleId: concept.moduleId, isPublished: true },
+            orderBy: { order: 'asc' },
+            select: { slug: true, title: true }
+        });
+
+        const currentIndex = siblings.findIndex(s => s.slug === slug);
+        const prevConcept = currentIndex > 0 ? siblings[currentIndex - 1] : null;
+        const nextConcept = currentIndex < siblings.length - 1 ? siblings[currentIndex + 1] : null;
+
+        return { concept, progress, prevConcept, nextConcept };
     },
 
     async getContent(conceptId: string) {
@@ -27,6 +38,13 @@ export const conceptsService = {
         });
         if (!content) throw new AppError('CONTENT_NOT_FOUND', 'Concept content not found', 404);
         return content;
+    },
+
+    async getResources(conceptId: string) {
+        const resources = await prisma.conceptResource.findMany({
+            where: { conceptId, isPublished: true }
+        });
+        return resources;
     },
 
     async getQuiz(conceptId: string) {

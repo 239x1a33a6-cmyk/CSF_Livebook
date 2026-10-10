@@ -1,0 +1,755 @@
+CS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 1
+High-priority syllabus: must-know (P0) and very likely (P1) concepts
+184 concepts in 42 modules across 8 subjects. Read left to right: subject, then its concepts (modules), then all the topics and sub-topics to cover under each.
+DBMS & SQL
+38 concepts
+Object-Oriented
+Programming
+24 concepts
+Operating Systems
+40 concepts
+Computer Networks
+25 concepts
+DevOps and Software
+Delivery
+23 concepts
+Computer Architecture
+2 concepts
+System Design
+Fundamentals
+9 concepts
+GenAI and AI
+Fundamentals
+23 concepts
+DBMS & SQL
+8 modules
+38 concepts
+18 must-know (P0)
+19.2 teaching hours
+Database Fundamentals
+6 concepts
+Student understands why databases exist, the
+relational model vocabulary, keys/constraints
+and how to translate a real domain into entities.
+● DBMS vs file system, DBMS vs RDBMS – Why databases exist, advantages over files, data independence,
+ redundancy/integrity/concurrency, DBMS vs RDBMS, DBA role
+● Relational model terminology – Table/relation, tuple/row/record, attribute/column, domain, schema vs instance, degree and cardinality
+ 
+● ER model and relationships – Entities, attributes (simple/composite/derived), relationships, cardinality 1:1/1:N/M:N, weak entities, ER to
+ table mapping, junction tables
+● SQL command categories (DDL, DML, DCL, TCL, DQL) – Which commands belong to which category, auto-commit behaviour, SQL as
+ declarative language
+● Keys and integrity constraints – Super, candidate, primary, alternate, composite, foreign, surrogate vs natural keys, PK vs UNIQUE,
+ NOT NULL, CHECK, DEFAULT, referential integrity and cascades
+● NULL semantics and data types – NULL vs 0/empty, three-valued logic, NULL in comparisons/aggregates/joins, common data types,
+ VARCHAR vs CHAR
+DBMS & SQL
+SQL Querying Basics
+8 concepts
+Student can write correct single-table queries,
+aggregations with grouping and DDL/DML, and
+knows SQL's logical evaluation order.
+● SELECT, WHERE, ORDER BY, LIMIT, DISTINCT – Projection/selection, ordering, pagination (LIMIT/OFFSET/TOP), DISTINCT
+ semantics, execution order preview
+● Filtering operators (LIKE, IN, BETWEEN, IS NULL) and aliases – Wildcards, BETWEEN inclusivity, IN vs OR, NULL checks,
+ column/table aliases
+● Aggregate functions and GROUP BY – COUNT/SUM/AVG/MIN/MAX, COUNT(*) vs COUNT(col), grouping rules, NULL handling,
+ multiple group columns
+● WHERE vs HAVING and logical query order – Row filter vs group filter, FROM-WHERE-GROUP BY-HAVING-SELECT-ORDER
+ BY-LIMIT order, alias visibility
+● DDL and DML statements – CREATE/ALTER/DROP, INSERT (multi-row, INSERT SELECT), UPDATE/DELETE with WHERE, safe
+ updates, upsert
+● DELETE vs TRUNCATE vs DROP – Row vs table vs structure removal, WHERE support, logging, rollback, identity reset, triggers,
+ permissions
+● SQL functions, CASE and COALESCE – String/date/numeric functions, CASE expressions, COALESCE/NULLIF, CAST, conditional
+ aggregation
+● Set operations (UNION, UNION ALL, INTERSECT, EXCEPT) – Duplicate handling, column compatibility, performance of UNION vs
+ UNION ALL
+DBMS & SQL
+Joins and Subqueries
+5 concepts
+Student can combine tables correctly, choose the
+right join, and write subqueries; solves classic
+SQL interview queries.
+● INNER, LEFT, RIGHT and FULL joins – Join semantics, unmatched rows, NULL-padding, join conditions, multi-table joins, Venn intuition
+ and its limits
+● CROSS join and SELF join – Cartesian product, generating combinations, self-join for hierarchies and comparisons
+ 
+● Join pitfalls (duplicates, ON vs WHERE, NULL keys) – Row explosion from one-to-many, filtering in ON vs WHERE for outer joins,
+ NULL never matching, natural join risks
+● Subqueries (scalar, IN, EXISTS, correlated) – Scalar/row/table subqueries, IN vs EXISTS, correlated vs non-correlated, NOT IN with
+ NULL trap, subquery vs join
+● Classic SQL interview queries – Nth highest salary, duplicate rows, delete duplicates, top earner per department, employees with no
+ orders, running counts, second-highest without LIMIT
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 2
+DBMS & SQL
+Advanced SQL
+4 concepts
+Student can use CTEs, views and window
+functions to solve analytic problems and
+understands procedural database objects.
+● CTEs and recursive queries – WITH clause, readability vs subquery, multiple CTEs, recursive CTE for hierarchies
+ 
+● Views and materialized views – Virtual tables, security/abstraction use, updatable views, materialized view refresh trade-offs
+ 
+● Window functions – OVER, PARTITION BY, ORDER BY, ROW_NUMBER/RANK/DENSE_RANK, LAG/LEAD, running totals, frames,
+ window vs GROUP BY
+● Advanced SQL interview patterns – Gaps and islands, consecutive events, pivot/unpivot, cumulative distributions, deduplication,
+ sessionization
+DBMS & SQL
+Normalization and Schema Design
+6 concepts
+Student can identify anomalies, apply functional
+dependencies to reach 3NF/BCNF, and
+design/denormalize a schema deliberately.
+● Functional dependencies, closure and anomalies – FDs, attribute closure, finding candidate keys, insert/update/delete anomalies, why
+ redundancy hurts
+● First normal form (1NF) – Atomic values, repeating groups, multivalued attributes, primary key requirement
+ 
+● Second and third normal forms (2NF, 3NF) – Partial dependency, transitive dependency, decomposition, lossless join, dependency
+ preservation
+● BCNF and higher normal forms – BCNF definition, 3NF vs BCNF, 4NF/5NF overview, lossless decomposition
+ 
+● Denormalization and design trade-offs – Read vs write trade-offs, precomputed columns, duplication risks, when denormalisation is
+ justified
+● Schema design practice (ER to tables) – Requirements to entities, keys and constraints, junction tables, naming, indexes, typical
+ designs: e-commerce, library, booking, social feed
+DBMS & SQL
+Transactions and Concurrency
+4 concepts
+Student can explain ACID, concurrency
+anomalies, isolation levels, locking and
+deadlocks, and reason about correctness under
+concurrent access.
+● Transactions and ACID – Transaction lifecycle, COMMIT/ROLLBACK/SAVEPOINT, atomicity, consistency, isolation, durability and how
+ each is implemented, auto-commit
+● Concurrency problems (dirty, non-repeatable, phantom, lost update) – Definitions with timelines, write skew, why each is harmful
+ 
+● Isolation levels – Read Uncommitted/Committed, Repeatable Read, Serializable; anomalies per level; real DB differences (PostgreSQL
+ RU behaves as RC; InnoDB default RR)
+● Locking and database deadlocks – Shared/exclusive locks, row/table locks, two-phase locking, deadlock detection and victim selection,
+ lock ordering, SELECT FOR UPDATE, optimistic vs pessimistic locking
+DBMS & SQL
+Indexing and Query Performance
+4 concepts
+Student can explain how indexes work, design
+them for queries, read execution plans, and
+avoid common performance traps.
+● Indexes and B+ trees – Why indexes exist, B-tree/B+ tree structure, lookup/range cost, leaf linking, index storage overhead
+ 
+● Clustered, non-clustered, composite and covering indexes – Clustered vs non-clustered, leftmost-prefix rule, column order, covering
+ index, unique index, selectivity/cardinality
+● Index trade-offs and when not to index – Write overhead, storage, low-cardinality columns, over-indexing, index maintenance, functions
+ on indexed columns
+● Execution plans and the query optimizer – EXPLAIN, seq scan vs index scan, join algorithms (nested loop, hash, merge), statistics,
+ cost-based optimisation, SARGability
+DBMS & SQL
+Databases in Practice: NoSQL and
+Access Patterns
+1 concepts
+Student can choose between SQL and NoSQL
+with reasons and understands application-level
+database concerns.
+● SQL vs NoSQL – Relational vs key-value/document/column-family/graph stores, schema flexibility, scaling models, consistency
+ trade-offs, polyglot persistence
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 3
+Object-Oriented
+Programming
+5 modules
+24 concepts
+11 must-know (P0)
+11.5 teaching hours
+Classes, Objects and
+Encapsulation
+8 concepts
+Student can model real entities as classes,
+control creation and access, and explain
+encapsulation and static/final semantics.
+● Procedural vs object-oriented paradigm – Why OOP exists, procedural vs OOP, four pillars overview, benefits and limits of OOP
+ 
+● Classes and objects – Blueprint vs instance, fields/methods, this/self, instance vs class members, object creation with new
+ 
+● Constructors – Default, parameterized, copy, private constructors, overloading, chaining with this(), destructor/finalizer
+ 
+● Access modifiers – public/protected/private/default (Java), C++ specifiers, Python naming conventions, package-private
+ 
+● Encapsulation – Data hiding, getters/setters, class invariants, validation, immutability, encapsulation vs abstraction
+ 
+● final, const and readonly – final variables/methods/classes, C++ const, constant-correctness, immutable class recipe
+ 
+● Static members – Static fields/methods/blocks, class vs instance state, static nested classes, why main is static, static and inheritance
+ 
+● Object lifecycle and memory implications – Creation, initialization, use, unreachable, GC/destruction, object header overhead, boxing
+ costs, escaping references
+Object-Oriented
+Programming
+Inheritance and Polymorphism
+6 concepts
+Student can design inheritance hierarchies,
+predict overriding/overloading behaviour and
+explain dynamic dispatch.
+● Inheritance – Types (single, multilevel, hierarchical), multiple inheritance & diamond problem, is-a relationship, super, protected access
+ 
+● Method overloading and overriding – Rules, covariant return, @Override, exceptions in overriding, why static/private/final cannot be
+ overridden, method hiding
+● Upcasting, downcasting and instanceof – Reference type vs object type, ClassCastException, safe casting, pattern matching for
+ instanceof
+● Compile-time vs runtime polymorphism – Static vs dynamic binding, dynamic dispatch, vtable/virtual functions, polymorphic collections,
+ overload resolution vs override resolution
+● equals, hashCode and toString contract – Reference vs value equality, contract rules, why override both, effect on HashMap/HashSet,
+ records/dataclasses
+● Constructor chaining and initialization order – Parent-then-child construction, static/instance initializer order, calling overridable
+ methods from constructors
+Object-Oriented
+Programming
+Abstraction: Abstract Classes and
+Interfaces
+3 concepts
+Student can choose between abstract classes
+and interfaces and explain abstraction versus
+encapsulation.
+● Abstraction – Hiding complexity vs hiding data, abstraction levels, contracts, abstraction vs encapsulation
+ 
+● Abstract classes – abstract methods, partial implementation, constructors in abstract classes, cannot instantiate, template method idea
+ 
+● Abstract class vs interface – Multiple inheritance via interfaces, default/static methods, state vs behaviour contracts, functional
+ interfaces, when to use which, pure virtual functions (C++)
+Object-Oriented
+Programming
+Relationships and SOLID Design
+6 concepts
+Student can pick the right relationship
+(is-a/has-a), evaluate coupling/cohesion, and
+apply and critique SOLID principles.
+● Association, aggregation and composition – Has-a relationships, lifecycle ownership, multiplicity, UML notation, examples
+ (Car-Engine, Library-Book)
+● Coupling and cohesion – Tight vs loose coupling, high cohesion, code smells (god class, feature envy), how interfaces reduce coupling
+ 
+● Composition over inheritance – Fragile base class, delegation, strategy via composition, when inheritance is still right
+ 
+● Single Responsibility and Open/Closed principles – SRP (one reason to change), OCP (extend, don't modify), violations and refactors,
+ strategy/polymorphism to satisfy OCP
+● Liskov Substitution and Interface Segregation principles – Subtype substitutability (Square-Rectangle), contracts, fat interfaces, role
+ interfaces
+● Dependency Inversion and Dependency Injection – DIP vs DI vs IoC, constructor injection, testability with mocks, DI containers
+ (Spring) at a conceptual level
+Object-Oriented
+Programming
+Design Patterns and Low-Level
+Design
+1 concepts
+Student can recognise and implement the
+most-asked design patterns and walk through a
+small LLD problem with clear classes and
+responsibilities.
+● Singleton pattern – Eager vs lazy, thread-safe double-checked locking, enum singleton, drawbacks (global state, testing)
+ \nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 4
+Operating
+Systems
+9 modules
+40 concepts
+19 must-know (P0)
+21.2 teaching hours
+OS Fundamentals
+4 concepts
+Student can explain what an operating system
+does, how user programs reach the kernel, and
+the kernel structure choices.
+● What an OS does: goals, types and structure – Resource manager and abstraction layer,
+ batch/multiprogramming/time-sharing/real-time/distributed, multitasking vs multiprocessing vs multithreading
+● Kernel: monolithic vs microkernel – Kernel responsibilities, monolithic, microkernel, hybrid, Linux/Windows/macOS examples
+ 
+● Interrupts, traps and exceptions – Hardware vs software interrupts, interrupt handler, trap, exception, polling vs interrupt-driven I/O
+ 
+● User mode vs kernel mode and system calls – Privilege levels, mode switch, syscall path, library call vs system call, common syscalls
+ (open/read/write/fork/exec), why protection is needed
+Operating Systems
+Processes
+6 concepts
+Student can describe a process's memory layout,
+states, creation/termination and how the OS
+switches between processes and lets them
+communicate.
+● Process, program and memory layout – Program vs process, code/data/heap/stack/BSS segments, address space, process image
+ 
+● PCB and process states – Process Control Block fields, new/ready/running/waiting/terminated, state transitions, suspended states
+ 
+● Process creation (fork, exec, wait, zombie, orphan) – fork return values, exec family, wait/waitpid, parent-child relationship, zombie,
+ orphan, cascading termination, init adoption
+● Context switching – What is saved/restored, PCB, cost (registers, TLB/cache effects), voluntary vs involuntary, process vs thread switch
+ 
+● Scheduling queues and dispatcher – Job/ready/device queues, long/short/medium-term schedulers, dispatcher latency
+ 
+● Inter-process communication – Pipes (anonymous/named), message queues, shared memory, sockets, signals, synchronization needs,
+ comparison
+Operating Systems
+Threads and Multithreading
+6 concepts
+Student can compare threads and processes,
+reason about concurrency vs parallelism and use
+thread pools/async safely.
+● Threads vs processes – What a thread shares/owns, creation and switching cost, isolation, crash impact, IPC vs shared memory, when
+ to use each
+● Threading models (user vs kernel threads) – User-level, kernel-level, many-to-one, one-to-one, many-to-many, blocking behaviour
+ 
+● Concurrency vs parallelism – Interleaving vs simultaneous execution, cores, Amdahl's law, CPU-bound vs I/O-bound workloads
+ 
+● Thread pools and executors – Why pool, sizing (CPU-bound vs I/O-bound), queue types, rejection, Executor/ThreadPoolExecutor,
+ pitfalls
+● Async I/O vs threads (event loop) – Blocking vs non-blocking, epoll idea, event loop, callbacks/promises/async-await link, Node/asyncio
+ vs thread-per-request
+● Thread lifecycle, thread safety and the GIL – Thread states, join/daemon, thread-safe vs not, immutability/confinement, Python GIL,
+ Java memory model overview
+Operating Systems
+CPU Scheduling
+5 concepts
+Student can compute scheduling metrics for
+FCFS, SJF/SRTF, Round Robin and priority
+algorithms and choose an algorithm for a
+workload.
+● Scheduling criteria and preemption – CPU burst, throughput, turnaround, waiting, response time, preemptive vs non-preemptive
+ 
+● FCFS scheduling – Algorithm, Gantt charts, convoy effect, calculation practice
+ 
+● SJF and SRTF scheduling – Non-preemptive SJF, preemptive SRTF, optimality of average waiting time, starvation, burst prediction
+ (exponential averaging)
+● Round Robin scheduling – Time quantum, context-switch overhead, effect of quantum size, response time
+ 
+● Priority scheduling and aging – Static/dynamic priority, starvation, aging, priority inversion link
+ 
+Operating Systems
+Synchronization
+5 concepts
+Student can explain race conditions and critical
+sections, choose between
+mutexes/semaphores/monitors, and solve classic
+synchronization problems.
+● Race conditions and the critical-section problem – Shared mutable state, interleavings, atomicity, critical section requirements (mutual
+ exclusion, progress, bounded waiting), Peterson's idea, TOCTOU
+● Mutex vs semaphore – Locks, mutex ownership, binary vs counting semaphore, wait/signal, spinlock vs blocking lock, common misuse
+ 
+● Classic synchronization problems – Producer-consumer (bounded buffer), readers-writers, dining philosophers, sleeping barber,
+ solutions and pitfalls
+● Monitors and condition variables – Monitor concept, wait/notify, spurious wakeups, while-loop guard, Java synchronized
+ 
+● Locks in practice (Java/Python/C++) – synchronized, ReentrantLock, try-lock, lock granularity, thread-safe collections, lock-free
+ counters
+Operating Systems
+Deadlocks
+3 concepts
+● Deadlock (conditions and handling) – Definition, four Coffman conditions, resource allocation graph, starvation vs deadlock, strategies
+ overview (ignore, prevent, avoid, detect+recover)
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 5
+Student can state deadlock conditions, apply
+prevention/avoidance/detection, and reason
+about deadlocks in real code.
+● Deadlock prevention and avoidance (Banker's algorithm) – Break one condition (lock ordering, hold-and-wait removal, preemption),
+ safe/unsafe states, Banker's algorithm safety and resource-request
+● Deadlock detection, recovery and practice – Wait-for graph, detection algorithm, victim selection, timeouts, thread dumps (jstack), lock
+ ordering in code review
+Operating Systems
+Memory Management
+4 concepts
+Student can explain address translation,
+contiguous allocation, fragmentation, paging and
+segmentation with calculations.
+● Address binding and logical vs physical addresses – Logical/virtual vs physical address, MMU, relocation, base/limit registers
+ 
+● Contiguous allocation and fragmentation – Fixed/variable partitions, first/best/worst fit, internal vs external fragmentation, compaction
+ 
+● Paging – Frames/pages, page table, address split (page number + offset), page-size trade-off, page table size calculations, protection bits
+ 
+● Segmentation and segmented paging – Segments vs pages, segment table, sharing/protection, paging vs segmentation comparison
+ 
+Operating Systems
+Virtual Memory
+4 concepts
+Student can explain demand paging, page faults,
+replacement algorithms, TLB and thrashing,
+including numerical problems.
+● Virtual memory and demand paging – Why virtual memory, demand paging, valid/invalid bit, page-fault handling steps, locality of
+ reference, benefits
+● Page replacement algorithms (FIFO, LRU, Optimal, Clock) – Algorithms, reference strings, hit/fault counts, Belady's anomaly, LRU
+ implementation (counter/stack/approximations), Clock
+● TLB and effective access time – TLB as page-table cache, hit ratio, effective access time formula, TLB flush on context switch
+ 
+● Thrashing and the working set – Too many processes, page-fault rate, working-set model, load control, page-fault frequency
+ 
+Operating Systems
+File Systems, Linux and OS in
+Practice
+3 concepts
+Student can explain file-system basics, use core
+Linux tooling, and relate OS concepts to
+containers and I/O.
+● File system basics (files, directories, inodes, allocation) – File attributes, directory structure, inodes, contiguous/linked/indexed
+ allocation, hard vs soft links, journaling idea
+● Linux essentials for developers – Shell, permissions (chmod), ps/top/kill/signals, pipes/redirection, grep/awk/sed basics, logs, systemd,
+ environment variables
+● Virtualization, namespaces and cgroups – VM/hypervisor vs container, Linux namespaces, cgroups, isolation vs shared kernel
+ 
+Computer
+Networks
+5 modules
+25 concepts
+11 must-know (P0)
+12.8 teaching hours
+Networking Fundamentals and
+Layered Models
+3 concepts
+Student can describe network types/devices and
+explain OSI and TCP/IP layers with
+encapsulation.
+● Network basics: LAN/MAN/WAN, topologies, devices – Network types, topologies, hub/switch/router/bridge/modem/access point,
+ client-server vs peer-to-peer
+● Performance metrics and switching – Bandwidth, latency, throughput, jitter, propagation/transmission delay, circuit vs packet switching
+ 
+● OSI model and TCP/IP model – Seven OSI layers and functions, four-layer TCP/IP, PDU names, encapsulation/decapsulation, OSI vs
+ TCP/IP, which devices work at which layer
+Computer Networks
+Data Link and Network Layer
+5 concepts
+Student can explain MAC/ARP, IP addressing
+and subnetting, NAT, routing and ICMP tools.
+● MAC addresses, ARP and switches – MAC vs IP, ARP request/reply, switch MAC table, broadcast domains, VLAN idea
+ 
+● IP addressing: IPv4, classes, CIDR and subnetting – Dotted decimal, classful vs CIDR, subnet mask, network/host/broadcast
+ addresses, subnetting and hosts-per-subnet, private/public ranges, loopback
+● IPv6, NAT and private vs public addressing – IPv6 address structure, why IPv6, NAT/PAT, port forwarding, CGNAT
+ 
+● ICMP, ping and traceroute – What ICMP does, TTL, how traceroute works, common ICMP messages
+ 
+● Routing basics – Routing table, longest-prefix match, default gateway, static vs dynamic routing, RIP/OSPF (intra-domain) vs BGP
+ (inter-domain) overview, forwarding vs routing
+Computer Networks
+Transport Layer
+6 concepts
+Student can explain ports/sockets, TCP
+reliability, handshake, flow and congestion
+control, and compare TCP with UDP for a
+workload.
+● Ports and sockets – Well-known ports, ephemeral ports, socket = IP+port+protocol, multiplexing, listening vs connected sockets,
+ five-tuple
+● UDP – Connectionless datagrams, header, no ordering/reliability, use cases (DNS, streaming, gaming), checksum
+ 
+● TCP reliability: sequence numbers, ACKs and retransmission – Segments, sequence/ack numbers, cumulative ACK, timeouts, fast
+ retransmit, sliding window basics, in-order delivery
+● TCP three-way handshake and termination – SYN/SYN-ACK/ACK, why three steps, four-way close, FIN/RST, SYN flood idea
+ \nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 6
+● TCP flow control and congestion control – Receiver window, sliding window, slow start, congestion avoidance, fast recovery,
+ Reno/CUBIC/BBR overview, flow vs congestion
+● TCP vs UDP – Comparison across reliability, ordering, overhead, speed, use cases, DNS over both, myths (TCP always faster/UDP
+ always unreliable)
+Computer Networks
+Application Layer and the Web
+Protocols
+8 concepts
+Student can explain DNS resolution, HTTP
+requests/responses, methods, status codes,
+headers, caching, cookies/sessions and HTTP
+versions.
+● DNS – Hierarchy, resolver/root/TLD/authoritative, recursive vs iterative, record types (A, AAAA, CNAME, MX, NS, TXT), caching/TTL,
+ DNS over UDP/TCP
+● HTTP basics: requests, methods, status codes, headers – Request/response format, GET/POST/PUT/PATCH/DELETE, safe vs
+ idempotent, status families (2xx-5xx), 400/401/403/404/409/429/500/502/503, headers (Host, Content-Type, Authorization)
+● HTTP versions and connection management – HTTP/1.0 vs 1.1 (keep-alive), HTTP/2 multiplexing/header compression, HTTP/3,
+ pipelining, HoL blocking
+● HTTP caching – Cache-Control (max-age, no-cache vs no-store), ETag/If-None-Match, Last-Modified, 304, Vary, CDN/browser cache
+ 
+● Cookies, sessions and statelessness – HTTP stateless, cookies (attributes), server sessions, session ID, cookie vs session vs token,
+ web storage
+● Statelessness and idempotent design – Why HTTP is stateless, benefits for scaling, idempotent retries
+ 
+● DHCP – Discover/Offer/Request/Ack, lease, what it configures, relation to DNS/gateway
+ 
+● HTTP vs HTTPS overview – What HTTPS adds (encryption, integrity, authentication), port 443, certificates overview, cost (TLS
+ handshake) - deep dive in Security module
+Computer Networks
+Putting It Together: The Web
+Request End-to-End
+3 concepts
+Student can narrate the full journey of a web
+request and explain intermediaries (proxy, load
+balancer, CDN, firewall) and real-time options.
+● What happens when you type a URL (end-to-end) – URL parsing, HSTS, DNS (cache to authoritative), ARP/gateway, TCP handshake,
+ TLS handshake, HTTP request, server processing, response, rendering, connection reuse
+● Proxy, reverse proxy, load balancer, firewall, VPN and CDN – Forward vs reverse proxy, L4 vs L7 load balancing, firewall types, VPN,
+ CDN edge caching, WAF
+● Real-time on the wire: polling, SSE and WebSockets – Short/long polling, Server-Sent Events, WebSocket upgrade handshake, when
+ to use which, REST vs WebSocket
+DevOps and
+Software Delivery
+7 modules
+23 concepts
+3 must-know (P0)
+10.8 teaching hours
+SDLC, Requirements and Agile
+3 concepts
+Student can describe SDLC models, requirement
+types and Agile/Scrum practices, and compare
+them.
+● SDLC phases and models – Requirements, design, implementation, testing, deployment, maintenance; Waterfall, V-model, iterative,
+ spiral, prototyping
+● Functional and non-functional requirements – FR vs NFR (performance, scalability, security, availability, usability), user stories,
+ acceptance criteria
+● Agile and Scrum – Agile manifesto, Scrum roles (PO, SM, team), artifacts (backlog, sprint, increment), ceremonies (planning, stand-up,
+ review, retro), velocity, story points
+DevOps and Software
+Delivery
+DevOps Fundamentals
+2 concepts
+Student can explain DevOps culture, the delivery
+lifecycle and DORA metrics, and describe
+Infrastructure as Code and how it connects to
+delivery pipelines.
+● DevOps culture, principles and lifecycle – Dev vs Ops silos, CALMS, plan-code-build-test-release-deploy-operate-monitor loop,
+ DevOps vs Agile vs SRE vs DevSecOps, DORA metrics (deployment frequency, lead time, change failure rate, time to restore), toolchain
+map
+● Infrastructure as Code and configuration management – IaC benefits, declarative vs imperative, Terraform plan/apply/state,
+ Ansible-style configuration, idempotency, mutable vs immutable infrastructure, drift, GitOps idea
+DevOps and Software
+Delivery
+Git and GitHub Workflows
+6 concepts
+Student can use Git confidently for daily work,
+resolve conflicts, choose merge vs rebase,
+recover from mistakes and follow
+PR/code-review workflows.
+● Git fundamentals – Working tree/staging/repo, init/clone/add/commit/log/diff, remotes, fetch vs pull, push, .gitignore, commit hygiene
+ 
+● Branching, merging and conflicts – Branches as pointers, fast-forward vs 3-way merge, conflict markers and resolution, HEAD,
+ detached HEAD
+● Merge vs rebase – History shape, rewriting history, golden rule (don't rebase shared commits), interactive rebase and squash, pull
+ --rebase
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 7
+● Git recovery and advanced commands – stash, reset (soft/mixed/hard) vs revert, cherry-pick, reflog, amend, tags, bisect, removing
+ secrets from history
+● Pull requests, code review and branching strategies – PR workflow, review etiquette, GitFlow vs trunk-based, protected branches,
+ CODEOWNERS
+● GitHub platform essentials – Remotes and origin/upstream, fork vs clone vs branch, PR lifecycle, issues and project boards, protected
+ branches with required reviews and status checks, SSH keys vs HTTPS and tokens, releases and tags, GitHub vs GitLab vs Bitbucket
+DevOps and Software
+Delivery
+Testing, Quality and Observability
+4 concepts
+Student can explain testing levels and
+techniques, write unit tests with mocks, and
+reason about logging/monitoring.
+● Testing levels and the test pyramid – Unit, integration, system, acceptance; test pyramid vs ice-cream cone; test doubles overview
+ 
+● Regression, smoke, sanity; black-box vs white-box testing – Purpose of each test type, when they run, static vs dynamic testing,
+ functional vs non-functional testing
+● Unit testing, mocking and TDD – Arrange-Act-Assert, mocks/stubs/fakes, isolation, TDD red-green-refactor, flaky tests, testability via DI
+ 
+● Logging, monitoring and observability basics – Log levels, structured logging, metrics/logs/traces, alerts, SLIs/SLOs, correlation IDs
+ 
+DevOps and Software
+Delivery
+CI/CD and Delivery
+2 concepts
+Student can explain CI/CD pipelines, release
+strategies and configuration management.
+● CI/CD pipelines – Continuous integration vs delivery vs deployment, pipeline stages, artifacts, environments, caching, secrets in CI,
+ GitHub Actions/Jenkins concepts
+● GitHub Actions and pipeline-as-code – Workflow YAML, events and triggers, jobs, steps and runners, matrix builds, caching, secrets
+ and environments, artifacts, reusable workflows, comparison with Jenkins and GitLab CI
+DevOps and Software
+Delivery
+Linux, Cloud and Automation
+Basics
+1 concepts
+Student can automate small operational tasks
+with shell scripts and map an application onto
+cloud building blocks.
+● Linux and shell scripting for automation – Bash variables, conditionals, loops, pipes and redirection, exit codes, cron, ssh, file
+ permissions, environment variables, grep/awk/tail for logs, writing idempotent scripts
+DevOps and Software
+Delivery
+Docker and Container
+Fundamentals
+5 concepts
+Student can explain containers vs VMs, build and
+run images, use volumes and networks,
+compose multi-container apps and apply basic
+container security and orchestration ideas.
+● Containers vs virtual machines – Shared kernel vs hypervisor, namespaces and cgroups in one picture, size/startup/isolation trade-offs,
+ when a VM is still the right choice
+● Docker architecture, images and containers – Client/daemon/registry, image vs container, layers and copy-on-write, container lifecycle,
+ essential commands (run, ps, exec, logs, build, pull, push), -d, -p, --rm
+● Dockerfile and image building – FROM/RUN/COPY/ADD, CMD vs ENTRYPOINT, ENV vs ARG, WORKDIR, EXPOSE, USER, layer
+ caching and instruction order, .dockerignore, multi-stage builds, tags vs digests
+● Docker volumes, bind mounts and data persistence – Ephemeral container filesystem, volumes vs bind mounts vs tmpfs, named
+ volumes, backing up data, why databases in containers need volumes
+● Docker Compose and multi-container apps – Services, networks, volumes, environment files, depends_on (start order vs readiness),
+ healthchecks, profiles, Compose vs Kubernetes
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 8
+Computer
+Architecture
+1 modules
+2 concepts
+0 must-know (P0)
+0.8 teaching hours
+Computer Organization Essentials
+2 concepts
+Student can explain how the CPU executes
+instructions, the memory hierarchy and cache
+locality, and how these affect software
+performance.
+● Memory hierarchy – Registers, L1/L2/L3, RAM, SSD/HDD, latency/capacity/cost trade-offs, volatile vs non-volatile
+ 
+● Cache memory and locality – Spatial/temporal locality, cache hit/miss, direct/associative mapping overview, write-through vs write-back,
+ cache-friendly code, false sharing intro
+System Design
+Fundamentals
+1 modules
+9 concepts
+0 must-know (P0)
+5.0 teaching hours
+Scalability Foundations
+9 concepts
+Student can reason about scalability, availability,
+load balancing, caching, database scaling and
+consistency trade-offs at fresher level.
+● Scalability, latency, throughput and availability – Definitions, percentiles (p50/p99), availability nines, SLA/SLO, reliability vs availability
+ 
+● Vertical vs horizontal scaling and stateless services – Scale up vs out, statelessness, session stores, single points of failure
+ 
+● Load balancing – Round robin, least connections, hashing, L4 vs L7, health checks, sticky sessions, LB as SPOF
+ 
+● Caching strategies – Cache-aside, read/write-through, write-back, TTL, eviction (LRU/LFU), invalidation, cache stampede, CDN, Redis
+ vs Memcached, Redis persistence (RDB/AOF)
+● Database replication and sharding – Leader-follower replication, replication lag, read replicas, partitioning vs sharding, shard keys, hot
+ shards, resharding, cross-shard queries
+● CAP theorem and consistency models – Consistency, availability, partition tolerance, CP vs AP, strong/eventual consistency, PACELC
+ preview
+● Message queues and asynchronous processing – Producers/consumers, queues vs pub/sub, Kafka/RabbitMQ/SQS overview,
+ at-least-once/at-most-once/exactly-once, ordering, DLQ, retries, idempotency, backpressure
+● Monolith vs microservices – Trade-offs, service boundaries, communication (sync/async), data ownership, distributed tracing, when
+ NOT to use microservices
+● Back-of-the-envelope estimation – QPS, storage, bandwidth estimation, powers of two, latency numbers, read/write ratios
+ 
+GenAI and AI
+Fundamentals
+6 modules
+23 concepts
+7 must-know (P0)
+12.2 teaching hours
+AI and Machine Learning
+Foundations
+4 concepts
+Student can place AI, ML, deep learning and
+generative AI relative to each other, explain how
+models learn and are evaluated, and avoid
+classic ML mistakes.
+● AI, ML, deep learning and generative AI: the landscape – AI vs ML vs deep learning vs GenAI, discriminative vs generative models,
+ supervised/unsupervised/reinforcement learning, typical applications, when classical ML is enough vs an LLM
+● How models learn: data, features, loss and gradient descent – Training data, features and labels, loss functions, gradient descent
+ intuition, learning rate, epochs and batches, parameters vs hyperparameters, training vs inference
+● Overfitting, underfitting and the bias-variance trade-off – Train/validation/test splits, cross-validation, regularisation, early stopping,
+ data leakage, more data vs simpler model
+● Model evaluation metrics – Accuracy, precision, recall, F1, confusion matrix, ROC-AUC idea, imbalanced-data pitfalls, regression
+ metrics (MAE, RMSE)
+GenAI and AI Fundamentals
+LLM and Transformer
+Fundamentals
+5 concepts
+Student can explain tokens, embeddings,
+attention, how LLMs are trained, generation
+controls and their limitations in interview-ready
+language.
+● Tokens, tokenization and embeddings – Tokens vs words, BPE/WordPiece/SentencePiece, vocabulary, token counts and cost, static
+ vs contextual embeddings, cosine similarity
+● Transformer architecture and attention – Self-attention intuition (query, key, value), multi-head attention, positional encoding, encoder
+ vs decoder vs decoder-only, why transformers replaced RNNs, quadratic cost, KV cache idea
+● How LLMs are trained: pretraining, fine-tuning and RLHF – Next-token prediction, pretraining data, supervised and instruction tuning,
+ RLHF and preference optimisation idea, base vs instruct models, scaling intuition
+● Context windows, sampling and generation controls – Context window limits, temperature, top-k and top-p, max tokens, stop
+ sequences, determinism, streaming, lost-in-the-middle effect
+● LLM limitations: hallucination, bias and knowledge cutoff – Why models hallucinate, knowledge cutoff, non-determinism, weak
+ arithmetic and long reasoning, bias, mitigations (grounding with retrieval, tools, verification, citations)
+GenAI and AI Fundamentals
+Prompt Engineering
+3 concepts
+● Prompting techniques: zero-shot, few-shot and chain-of-thought – System vs user prompts, clear instructions and delimiters,
+ examples for few-shot, chain-of-thought and self-consistency, output format control, iterating on prompts
+\nCS FUNDAMENTALS INTERVIEW SYLLABUS
+High-priority topics only (P0 + P1)
+Source: CS Fundamentals Interview Master Curriculum workbook. Red dot = P0 must-know, orange dot = P1 very likely. Only P0 and P1 concepts are shown. Concepts follow the teaching order.
+Page 9
+Student can write clear, structured prompts, use
+few-shot and step-by-step reasoning prompts,
+request structured output and recognise
+prompt-injection risks.
+● Structured outputs, prompt templates and versioning – JSON-schema or structured output, templates with variables, low temperature
+ for extraction, prompt versioning, regression tests for prompts
+● Prompt injection, jailbreaks and prompt security – Direct vs indirect injection, data exfiltration through tools, defence in depth (separate
+ instructions and data, least-privilege tools, output validation, human approval), jailbreaks
+GenAI and AI Fundamentals
+RAG and Vector Search
+5 concepts
+Student can explain embeddings-based retrieval,
+design a RAG pipeline, choose chunking and
+search strategies, evaluate retrieval, and decide
+between RAG, fine-tuning and long context.
+● Embeddings similarity and vector databases – Cosine, dot product and Euclidean similarity, vector database role (FAISS, Chroma,
+ Pinecone, pgvector idea), approximate nearest neighbour (HNSW, IVF idea), metadata filtering, analogy to database indexes
+● RAG architecture and pipeline – Ingestion (load, clean, chunk, embed, store), retrieval, prompt augmentation, generation, citations and
+ grounding, RAG vs plain LLM
+● Chunking, hybrid search and re-ranking – Chunk size and overlap, semantic and structural chunking, sparse (BM25) vs dense retrieval,
+ hybrid search, cross-encoder re-ranking, query rewriting, lost-in-the-middle
+● Evaluating and debugging RAG systems – Retrieval metrics (recall@k, MRR), faithfulness and answer relevance, golden question sets,
+ failure modes (bad chunk, no retrieval, stale data), RAGAS-style evaluation ideas
+● RAG vs fine-tuning vs long context: choosing an approach – Knowledge freshness, style and format needs, cost, latency, privacy and
+ access control, combining approaches
+GenAI and AI Fundamentals
+Building with LLM APIs and Agents
+4 concepts
+Student can call LLM APIs robustly, use tool
+calling, explain agent loops and their risks,
+control latency and cost, and outline an LLM
+application architecture.
+● Calling LLM APIs: requests, streaming, cost and rate limits – Chat request and message roles, tokens and cost estimation, streaming,
+ timeouts, retries with backoff, error handling, API key safety, caching and batching
+● Function calling, tool use and MCP – Tool schemas, model chooses and app executes, validation and idempotency, tool errors, the
+ Model Context Protocol idea of a standard way to expose tools and data
+● AI agents: planning, memory and orchestration – Agent loop (reason, act, observe), planning, short- and long-term memory,
+ multi-agent setups, orchestration frameworks (LangChain, LlamaIndex, LangGraph idea), reliability and cost blow-ups, when not to use an
+agent
+● Designing an LLM-powered application – Requirements, architecture (gateway, orchestrator, retrieval, model, guardrails, cache,
+ logging), failure handling and fallbacks, evaluation loop, security and privacy
+GenAI and AI Fundamentals
+Evaluation, Safety and Responsible
+AI
+2 concepts
+Student can evaluate LLM outputs with datasets
+and judges, describe guardrails and
+responsible-AI practice, and use coding
+assistants responsibly.
+● Evaluating LLM outputs: benchmarks, LLM-as-judge and human review – Benchmarks vs task-specific evals, golden datasets,
+ LLM-as-judge and its biases, human review, A/B tests, regression suites, perplexity and BLEU/ROUGE basics
+● Guardrails, safety and responsible AI – Content moderation, PII handling, bias and fairness, privacy and data retention,
+ human-in-the-loop, transparency, licensing and copyright awareness, hallucination controls

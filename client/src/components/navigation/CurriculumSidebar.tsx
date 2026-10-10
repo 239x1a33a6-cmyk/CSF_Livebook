@@ -54,10 +54,10 @@ export function CurriculumSidebar({ subjectSlug }: { subjectSlug?: string }) {
 
     if (loading) {
         return (
-            <div className="w-64 flex-shrink-0 animate-pulse border-r border-gray-800 bg-[#0b0c0c] h-screen overflow-y-auto p-4 hidden md:block">
-                <div className="h-4 bg-gray-800 rounded w-1/2 mb-4"></div>
-                <div className="h-3 bg-gray-800 rounded w-full mb-2"></div>
-                <div className="h-3 bg-gray-800 rounded w-full mb-2"></div>
+            <div className="w-64 flex-shrink-0 animate-pulse border-r border-gray-200 bg-white h-screen overflow-y-auto p-4 hidden md:block">
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
             </div>
         );
     }
@@ -65,9 +65,9 @@ export function CurriculumSidebar({ subjectSlug }: { subjectSlug?: string }) {
     if (!subjectData) return null;
 
     return (
-        <div className="w-64 flex-shrink-0 border-r border-gray-800 bg-[#0b0c0c] h-[calc(100vh-3.5rem)] overflow-y-auto hidden md:block">
-            <div className="p-4 border-b border-gray-800">
-                <h3 className="text-sm font-bold text-gray-200 truncate" title={subjectData.name}>
+        <div className="w-64 flex-shrink-0 border-r border-gray-200 bg-white h-[calc(100vh-3.5rem)] overflow-y-auto hidden md:block">
+            <div className="p-4 border-b border-gray-200">
+                <h3 className="text-sm font-bold text-gray-800 truncate" title={subjectData.name}>
                     {subjectData.name}
                 </h3>
             </div>
@@ -94,8 +94,8 @@ export function CurriculumSidebar({ subjectSlug }: { subjectSlug?: string }) {
                                         <Link
                                             to={`/concepts/${c.slug}`}
                                             className={`group flex items-start gap-2 px-4 py-1.5 text-sm transition-colors ${isActive
-                                                ? 'bg-brand-900/20 text-brand-400 font-medium border-r-2 border-brand-500'
-                                                : 'text-gray-400 hover:bg-[#151718] hover:text-gray-200'
+                                                ? 'bg-brand-50 text-brand-700 font-medium border-r-2 border-brand-500'
+                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                                 }`}
                                         >
                                             <span className={`mt-0.5 text-xs ${isActive ? 'text-brand-500' : textColor}`}>

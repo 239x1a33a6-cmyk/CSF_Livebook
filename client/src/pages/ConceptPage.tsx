@@ -6,62 +6,150 @@ import type { ContentBlock } from '@shared/types/content';
 import { CurriculumSidebar } from '../components/navigation/CurriculumSidebar';
 import { OnThisPageSidebar } from '../components/navigation/OnThisPageSidebar';
 import { BreadcrumbNav } from '../components/navigation/BreadcrumbNav';
+import ReactMarkdown from 'react-markdown';
 
-type RevisionMode = 'SELECTOR' | 'VIDEO' | 'CHEAT_SHEET';
+type ResourceTab = 'VIDEO' | 'CHEAT_SHEET' | 'QUIZ';
 
 export function ConceptPage() {
     const { conceptSlug } = useParams<{ conceptSlug: string }>();
     const navigate = useNavigate();
-    const [concept, setConcept] = useState<ConceptDetail | null>(null);
-    const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+
+    // Core data
+    const [concept, setConcept] = useState<any>(null);
+    const [contentBlocks, setContentBlocks] = useState<ContentBlock[]>([]);
+    const [resources, setResources] = useState<any[]>([]);
+    const [prevConcept, setPrevConcept] = useState<{ slug: string; title: string } | null>(null);
+    const [nextConcept, setNextConcept] = useState<{ slug: string; title: string } | null>(null);
+
+    // State
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [mode, setMode] = useState<RevisionMode>('SELECTOR');
+    const [activeTab, setActiveTab] = useState<ResourceTab>('VIDEO');
 
     useEffect(() => {
         if (!conceptSlug) return;
         setIsLoading(true);
         setError('');
-        setMode('SELECTOR'); // Reset on concept change
 
-        conceptsService.getBySlug(conceptSlug)
-            .then((res) => {
-                setConcept(res.concept);
-                conceptsService.start(res.concept.id).catch(console.error);
-                return conceptsService.getContent(res.concept.id);
+        Promise.all([
+            conceptsService.getBySlug(conceptSlug),
+            conceptsService.getContent(conceptSlug).catch(() => ({ blocks: [] }))
+        ])
+            .then(([conceptRes, contentRes]) => {
+                const fetchedConcept = conceptRes.concept;
+                setConcept(fetchedConcept);
+                setPrevConcept(conceptRes.prevConcept || null);
+                setNextConcept(conceptRes.nextConcept || null);
+                setContentBlocks(contentRes.blocks || []);
+
+                // Background start logic
+                conceptsService.start(fetchedConcept.id).catch(console.error);
+
+                // Fetch resources
+                return conceptsService.getResources(fetchedConcept.id);
             })
-            .then((content) => {
-                setBlocks(content.blocks as ContentBlock[]);
+            .then((fetchedResources) => {
+                setResources(fetchedResources);
+                // Auto default based on what's available
+                const hasVideo = fetchedResources.some((r: any) => r.type === 'VIDEO');
+                const hasCs = fetchedResources.some((r: any) => r.type === 'CHEAT_SHEET');
+                if (hasVideo) setActiveTab('VIDEO');
+                else if (hasCs) setActiveTab('CHEAT_SHEET');
+                else setActiveTab('VIDEO');
             })
             .catch(() => setError('Concept not found or failed to load content.'))
             .finally(() => setIsLoading(false));
+
     }, [conceptSlug]);
 
-    if (isLoading) return <div className="w-full h-[calc(100vh-3.5rem)] overflow-y-auto bg-[#0b0c0c]"><div className="page-container py-8"><div className="h-8 w-64 bg-gray-800 rounded animate-pulse" /></div></div>;
-    if (error || !concept) return <div className="w-full h-[calc(100vh-3.5rem)] overflow-y-auto bg-[#0b0c0c]"><div className="page-container py-8"><p className="text-red-400 text-sm">{error || 'Not found'}</p></div></div>;
+    if (isLoading) return <div className="w-full h-[calc(100vh-3.5rem)] overflow-y-auto mix-blend-multiply sm:mix-blend-normal"><div className="page-container py-12 flex justify-center"><div className="w-12 h-12 rounded-full border-4 border-brand-100 border-t-brand-500 animate-spin" /></div></div>;
+    if (error || !concept) return <div className="w-full h-[calc(100vh-3.5rem)] overflow-y-auto mix-blend-multiply sm:mix-blend-normal"><div className="page-container py-12"><div className="card p-8 border-red-100 bg-red-50/50"><p className="text-red-600 font-bold text-center">{error || 'Not found'}</p></div></div></div>;
 
-    const hasVideo = blocks.some(b => b.type === 'video');
-    const hasCheatSheet = blocks.some(b => b.type !== 'video' && b.type !== 'understanding_check'); // General assumption
+    const videoResource = resources.find(r => r.type === 'VIDEO');
+    const csResource = resources.find(r => r.type === 'CHEAT_SHEET');
 
-    // Filter blocks depending on mode
-    let displayBlocks = blocks;
-    if (mode === 'VIDEO') {
-        const videoBlock = blocks.find(b => b.type === 'video');
-        const recapBlock = blocks.find(b => b.type === 'recap');
-        displayBlocks = [videoBlock, recapBlock].filter(Boolean) as ContentBlock[];
-    } else if (mode === 'CHEAT_SHEET') {
-        displayBlocks = blocks.filter(b => b.type !== 'video');
-    }
+    // Rendering cheat sheet
+    const renderCheatSheet = () => {
+        if (!csResource) {
+            return (
+                <div className="card flex flex-col items-center justify-center p-16 md:p-20 text-center min-h-[400px]">
+                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-inner border border-slate-200/50 filter grayscale opacity-60">
+                        <span className="text-4xl mb-1">📄</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Cheat sheet currently unavailable.</h3>
+                    <p className="text-sm font-medium text-slate-500 max-w-md">The instructor is still preparing the written material for this concept. Please check back soon.</p>
+                </div>
+            );
+        }
+
+        if (csResource.source === 'JSON_BLOCKS') {
+            return <ContentRenderer blocks={contentBlocks} />;
+        }
+        if (csResource.source === 'UPLOAD' && csResource.content) {
+            return (
+                <div className="w-full h-[800px] border border-gray-200 rounded-xl overflow-hidden bg-white">
+                    <object data={csResource.content} type="application/pdf" className="w-full h-full">
+                        <p className="p-4 text-center text-sm text-gray-600">
+                            PDF viewer not supported. <a href={csResource.content} target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">Download PDF</a>
+                        </p>
+                    </object>
+                </div>
+            );
+        }
+        if (csResource.source === 'MARKDOWN') {
+            return (
+                <div className="prose prose-sm md:prose-base prose-brand max-w-none card p-8 md:p-12 mb-10">
+                    <ReactMarkdown>{csResource.content || ''}</ReactMarkdown>
+                </div>
+            );
+        }
+        return null;
+    };
+
+    const renderVideo = () => {
+        if (!videoResource) {
+            return (
+                <div className="card flex flex-col items-center justify-center p-16 md:p-20 text-center min-h-[400px]">
+                    <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-inner border border-slate-200/50 filter grayscale opacity-60">
+                        <span className="text-4xl ml-1 mb-1">🎥</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Video currently unavailable.</h3>
+                    <p className="text-sm font-medium text-slate-500 max-w-md">The instructor is still recording or editing the video for this concept. Please check back soon.</p>
+                </div>
+            );
+        }
+
+        if (videoResource.source === 'URL') {
+            return (
+                <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-900 shadow-2xl ring-1 ring-white/10 max-w-5xl mx-auto">
+                    <iframe
+                        src={videoResource.content}
+                        className="absolute inset-0 w-full h-full border-0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen>
+                    </iframe>
+                </div>
+            );
+        }
+
+        if (videoResource.source === 'UPLOAD') {
+            return (
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black shadow-lg">
+                    <video controls className="w-full h-full" src={videoResource.content}></video>
+                </div>
+            );
+        }
+
+        return null;
+    };
 
     return (
-        <div className="flex w-full h-[calc(100vh-3.5rem)] overflow-hidden">
-            {/* Left Sidebar Curriculum Navigation */}
+        <div className="flex w-full h-[calc(100vh-3.5rem)] overflow-hidden mix-blend-multiply sm:mix-blend-normal">
             <CurriculumSidebar subjectSlug={concept.module.subject.slug} />
 
-            {/* Main Content Area */}
             <div className="flex-1 overflow-y-auto scroll-smooth">
-                <div className="py-8 px-4 sm:px-6 lg:px-12 max-w-4xl mx-auto">
-                    {/* Breadcrumbs */}
+                <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-12 max-w-5xl mx-auto pb-32">
+                    {/* Compact Breadcrumbs & Header */}
                     <BreadcrumbNav items={[
                         { label: 'Dashboard', path: '/dashboard' },
                         { label: concept.module.subject.name, path: `/subjects/${concept.module.subject.slug}` },
@@ -69,116 +157,94 @@ export function ConceptPage() {
                         { label: concept.conceptCode }
                     ]} />
 
-                    {/* Concept Header */}
-                    <div className="mb-10 border-b border-gray-800 pb-6">
-                        <div className="flex items-center gap-3 mb-3">
-                            <span className="font-mono text-sm font-semibold text-brand-400 bg-[#151718] px-2 py-0.5 rounded border border-gray-800">{concept.conceptCode}</span>
-                            <span className={`text-xs px-2 py-0.5 rounded font-medium border ${concept.difficulty === 'BEGINNER' ? 'bg-[#151718] text-green-400 border-green-800/50' :
-                                concept.difficulty === 'INTERMEDIATE' ? 'bg-[#151718] text-yellow-400 border-yellow-800/50' : 'bg-[#151718] text-red-400 border-red-800/50'
-                                }`}>{concept.difficulty}</span>
-                            <span className="text-xs text-gray-500 font-medium">⏱ {concept.estimatedMinutes} min</span>
+                    <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between pb-6 gap-6 pt-4 border-b border-slate-200/60 relative">
+                        {/* Glowing highlight point under the header */}
+                        <div className="absolute bottom-0 left-0 w-32 h-px bg-gradient-to-r from-brand-500 to-transparent"></div>
+                        <div className="relative z-10 w-full">
+                            <div className="flex flex-wrap items-center gap-3 mb-4">
+                                <span className="font-mono text-[11px] font-bold text-slate-500 bg-white shadow-sm px-2.5 py-1 rounded-md border border-slate-200/80">{concept.conceptCode}</span>
+                                <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-md shadow-sm border ${concept.difficulty === 'BEGINNER' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+                                    concept.difficulty === 'INTERMEDIATE' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-rose-50 text-rose-700 border-rose-200'
+                                    }`}>{concept.difficulty}</span>
+                            </div>
+                            <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 leading-tight tracking-tight max-w-3xl">
+                                {concept.title}
+                            </h1>
                         </div>
-                        <h1 className="text-3xl lg:text-4xl font-bold text-gray-100 leading-tight mb-2">
-                            {concept.title}
-                        </h1>
                     </div>
 
-                    {/* Revision Mode Selector */}
-                    {mode === 'SELECTOR' && (
-                        <div className="my-10">
-                            <h2 className="text-xl font-semibold text-gray-100 mb-6 text-center">How do you want to revise?</h2>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-2xl mx-auto mb-8">
-                                {hasVideo && (
-                                    <button
-                                        onClick={() => setMode('VIDEO')}
-                                        className="card p-6 flex flex-col items-center justify-center gap-3 border-gray-800 hover:border-brand-500 hover:ring-1 hover:ring-brand-500 transition-all text-left group"
-                                    >
-                                        <div className="text-3xl mb-1 filter grayscale group-hover:grayscale-0 transition-all">🎥</div>
-                                        <div className="text-center">
-                                            <h3 className="font-semibold text-gray-200 mb-1">Watch Video</h3>
-                                            <p className="text-xs text-gray-500 mb-3">Optional guided revision (~10 min)</p>
-                                        </div>
-                                        <span className="text-sm font-semibold text-white bg-brand-600 px-4 py-2 rounded-lg w-full text-center hover:bg-brand-500 transition-colors">Watch Video</span>
-                                    </button>
-                                )}
-                                {hasCheatSheet && (
-                                    <button
-                                        onClick={() => setMode('CHEAT_SHEET')}
-                                        className="card p-6 flex flex-col items-center justify-center gap-3 border-gray-800 hover:border-brand-500 hover:ring-1 hover:ring-brand-500 transition-all text-left group"
-                                    >
-                                        <div className="text-3xl mb-1 filter grayscale group-hover:grayscale-0 transition-all">📄</div>
-                                        <div className="text-center">
-                                            <h3 className="font-semibold text-gray-200 mb-1">Cheat Sheet</h3>
-                                            <p className="text-xs text-gray-500 mb-3">Fast text revision (~5 min)</p>
-                                        </div>
-                                        <span className="text-sm font-semibold text-white bg-brand-600 px-4 py-2 rounded-lg w-full text-center hover:bg-brand-500 transition-colors">Open Cheat Sheet</span>
-                                    </button>
+                    {/* Resources Tabs - Premium Pill Design */}
+                    <div className="flex bg-slate-100/60 p-1.5 rounded-xl mb-10 overflow-x-auto scrollbar-hide max-w-max border border-slate-200/50 shadow-inner">
+                        <button
+                            onClick={() => setActiveTab('VIDEO')}
+                            className={`px-6 py-2.5 font-bold text-sm transition-all rounded-lg whitespace-nowrap flex items-center gap-2 ${activeTab === 'VIDEO' ? 'bg-white text-brand-700 shadow-[0_2px_10px_rgb(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'}`}
+                        >
+                            <span className="text-base opacity-70 filter saturate-150">🎥</span> Video
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('CHEAT_SHEET')}
+                            className={`px-6 py-2.5 font-bold text-sm transition-all rounded-lg whitespace-nowrap flex items-center gap-2 ${activeTab === 'CHEAT_SHEET' ? 'bg-white text-brand-700 shadow-[0_2px_10px_rgb(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'}`}
+                        >
+                            <span className="text-base opacity-70 filter saturate-150">📄</span> Content
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('QUIZ')}
+                            className={`px-6 py-2.5 font-bold text-sm transition-all rounded-lg whitespace-nowrap flex items-center gap-2 ${activeTab === 'QUIZ' ? 'bg-white text-brand-700 shadow-[0_2px_10px_rgb(0,0,0,0.06)]' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-200/50'}`}
+                        >
+                            <span className="text-base opacity-70 filter saturate-150">🧠</span> Quiz
+                        </button>
+                    </div>
+
+                    {/* Rendering the active tab space */}
+                    <div className="min-h-[500px]">
+                        {activeTab === 'VIDEO' && renderVideo()}
+                        {activeTab === 'CHEAT_SHEET' && renderCheatSheet()}
+                        {activeTab === 'QUIZ' && (
+                            <div className="card text-center p-12 md:p-20 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-brand-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                <h3 className="text-2xl font-black text-slate-800 mb-3 relative z-10">Knowledge Check</h3>
+                                {!concept.isPublished ? (
+                                    <>
+                                        <p className="text-sm font-medium text-slate-500 mb-0 mx-auto relative z-10">The graded assessment will be unlocked once this concept's learning materials are published.</p>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-sm font-medium text-slate-500 mb-10 max-w-md mx-auto relative z-10">You're about to start the graded assessment for <span className="font-bold text-slate-700">{concept.title}</span>. Ensure you've reviewed the video and content beforehand.</p>
+                                        <button
+                                            onClick={() => navigate(`/concepts/${concept.slug}/quiz`)}
+                                            className="btn-brand px-10 py-3 text-[15px] relative z-10"
+                                        >
+                                            Launch Assessment &rarr;
+                                        </button>
+                                    </>
                                 )}
                             </div>
+                        )}
 
-                            <div className="text-center border-t border-gray-800 pt-8 max-w-lg mx-auto">
-                                <p className="text-sm text-gray-500 mb-3 block">Already know this concept?</p>
-                                <button
-                                    onClick={() => navigate(`/concepts/${concept.slug}/quiz`)}
-                                    className="btn-secondary w-full justify-center"
-                                >
-                                    Start Quiz Directly &rarr;
+                        {/* Compact Navigation Footer */}
+                        <div className="flex justify-between items-center mt-16 pt-8 border-t border-slate-200/60">
+                            {prevConcept ? (
+                                <button onClick={() => navigate(`/concepts/${prevConcept.slug}`)} className="text-slate-500 hover:text-brand-600 group flex flex-col items-start transition-all max-w-[45%]">
+                                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2 group-hover:text-brand-500 transition-colors">&larr; Previous Concept</span>
+                                    <span className="font-extrabold text-sm md:text-base truncate w-full text-left bg-white shadow-sm border border-slate-200/50 px-4 py-2 rounded-lg group-hover:shadow-md transition-shadow">{prevConcept.title}</span>
                                 </button>
-                            </div>
-                        </div>
-                    )}
+                            ) : <div></div>}
 
-                    {/* Mode Navigation controls above content */}
-                    {mode !== 'SELECTOR' && (
-                        <div className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-                            <button onClick={() => setMode('SELECTOR')} className="text-sm text-gray-400 hover:text-white transition-colors">
-                                &larr; Back to modes
-                            </button>
-                            <div className="flex gap-2">
-                                {hasVideo && mode === 'CHEAT_SHEET' && (
-                                    <button onClick={() => setMode('VIDEO')} className="text-xs bg-[#1a1c1d] border border-gray-700 hover:bg-[#202224] text-gray-300 px-3 py-1.5 rounded transition-colors">
-                                        Switch to Video
-                                    </button>
-                                )}
-                                {hasCheatSheet && mode === 'VIDEO' && (
-                                    <button onClick={() => setMode('CHEAT_SHEET')} className="text-xs bg-[#1a1c1d] border border-gray-700 hover:bg-[#202224] text-gray-300 px-3 py-1.5 rounded transition-colors">
-                                        Switch to Cheat Sheet
-                                    </button>
-                                )}
-                            </div>
+                            {nextConcept ? (
+                                <button onClick={() => navigate(`/concepts/${nextConcept.slug}`)} className="text-slate-500 hover:text-brand-600 group flex flex-col items-end transition-all max-w-[45%] text-right">
+                                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2 group-hover:text-brand-500 transition-colors">Next Concept &rarr;</span>
+                                    <span className="font-extrabold text-sm md:text-base truncate w-full bg-white shadow-sm border border-slate-200/50 px-4 py-2 rounded-lg group-hover:shadow-md transition-shadow">{nextConcept.title}</span>
+                                </button>
+                            ) : <div></div>}
                         </div>
-                    )}
-
-                    {/* Content Rendering */}
-                    {mode !== 'SELECTOR' && (
-                        <ContentRenderer blocks={displayBlocks} />
-                    )}
-
-                    {/* Bottom CTA for Quiz */}
-                    {mode !== 'SELECTOR' && (
-                        <div className="mt-16 pt-10 border-t border-gray-800 text-center bg-[#151718] rounded-2xl p-8 mb-10 border border-gray-800">
-                            <h3 className="text-xl font-semibold text-gray-200 mb-2">Ready to test yourself?</h3>
-                            <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">Test whether you can actually apply the concepts of {concept.title} under pressure.</p>
-                            <button
-                                onClick={() => navigate(`/concepts/${concept.slug}/quiz`)}
-                                className="btn-primary btn-lg w-full max-w-xs shadow-md hover:shadow-lg"
-                            >
-                                Start Quiz &rarr;
-                            </button>
-                        </div>
-                    )}
+                    </div>
                 </div>
             </div>
 
-            {/* Right Contextual Navigation - Only shown if not in selector mode */}
-            {mode === 'CHEAT_SHEET' && (
+            {/* Context Navigation - Only for old JSON blocks to keep TOC */}
+            {activeTab === 'CHEAT_SHEET' && csResource?.source === 'JSON_BLOCKS' && (
                 <OnThisPageSidebar />
             )}
         </div>
     );
-}
-
-interface ConceptDetail {
-    id: string; title: string; conceptCode: string; slug: string; difficulty: string; estimatedMinutes: number;
-    module: { id: string; name: string; subject: { slug: string; name: string } };
 }

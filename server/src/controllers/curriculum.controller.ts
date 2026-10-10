@@ -58,6 +58,13 @@ export const conceptsController = {
         } catch (err) { next(err); }
     },
 
+    async getResources(req: AuthRequest, res: Response, next: NextFunction) {
+        try {
+            const data = await conceptsService.getResources(req.params.conceptId);
+            res.json({ success: true, data });
+        } catch (err) { next(err); }
+    },
+
     async getQuiz(req: AuthRequest, res: Response, next: NextFunction) {
         try {
             const data = await conceptsService.getQuiz(req.params.conceptId);

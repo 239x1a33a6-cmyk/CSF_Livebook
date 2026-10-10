@@ -336,12 +336,12 @@ function CheatSheetBlock({ data }: { data: any }) {
         <div className="space-y-12 pb-10">
             {/* Core Definitions */}
             <div>
-                <h3 className="text-xl font-bold text-white mb-4 border-b border-gray-800 pb-2">Core Definitions</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">Core Definitions</h3>
                 <div className="grid gap-4">
                     {Object.entries(data.oneLineDefinition).map(([k, v]) => (
-                        <div key={k} className="p-4 bg-[#1a1c1d] border border-gray-800 rounded-lg">
-                            <span className="font-mono text-brand-400 font-semibold mb-2 block uppercase tracking-wider text-xs">{k}</span>
-                            <p className="text-sm text-gray-300 leading-relaxed">{String(v)}</p>
+                        <div key={k} className="p-4 bg-white border border-gray-200 rounded-lg">
+                            <span className="font-mono text-brand-600 font-semibold mb-2 block uppercase tracking-wider text-xs">{k}</span>
+                            <p className="text-sm text-gray-700 leading-relaxed">{String(v)}</p>
                         </div>
                     ))}
                 </div>
@@ -350,10 +350,10 @@ function CheatSheetBlock({ data }: { data: any }) {
             {/* Core Idea */}
             {data.coreIdea && (
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-4 border-b border-gray-800 pb-2">The Core Idea</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">The Core Idea</h3>
                     <ul className="space-y-3">
                         {data.coreIdea.map((idea: string, i: number) => (
-                            <li key={i} className="flex gap-3 text-sm text-gray-400 leading-relaxed">
+                            <li key={i} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
                                 <span className="text-brand-500 mt-1 flex-shrink-0">▪</span>
                                 <span>{idea}</span>
                             </li>
@@ -365,13 +365,13 @@ function CheatSheetBlock({ data }: { data: any }) {
             {/* Key Terms */}
             {data.keyTerms && (
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-4 border-b border-gray-800 pb-2">Key Terms</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">Key Terms</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {data.keyTerms.map((t: any, i: number) => (
-                            <div key={i} className="flex items-start gap-3 border-l-2 border-gray-800 pl-4 py-1">
+                            <div key={i} className="flex items-start gap-3 border-l-2 border-gray-200 pl-4 py-1">
                                 <div className="flex-1">
-                                    <p className="text-brand-400 font-mono text-xs mb-1.5">{t.term}</p>
-                                    <p className="text-xs text-gray-400 leading-relaxed">{t.meaning}</p>
+                                    <p className="text-brand-600 font-mono text-xs mb-1.5">{t.term}</p>
+                                    <p className="text-xs text-gray-600 leading-relaxed">{t.meaning}</p>
                                 </div>
                             </div>
                         ))}
@@ -381,20 +381,20 @@ function CheatSheetBlock({ data }: { data: any }) {
             {/* Comparison Tables */}
             {data.comparisonTables && data.comparisonTables.map((table: any, i: number) => (
                 <div key={i} className="overflow-x-auto">
-                    <h3 className="text-xl font-bold text-white mb-4 border-b border-gray-800 pb-2">{table.title}</h3>
-                    <table className="w-full text-sm border-collapse bg-[#1a1c1d] rounded-lg overflow-hidden border border-gray-800">
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">{table.title}</h3>
+                    <table className="w-full text-sm border-collapse bg-white rounded-lg overflow-hidden border border-gray-200">
                         <thead>
-                            <tr className="bg-[#242729] border-b border-gray-800">
+                            <tr className="bg-gray-50 border-b border-gray-200">
                                 {table.columns.map((c: string, ci: number) => (
-                                    <th key={ci} className="px-4 py-3 text-left font-semibold text-gray-300">{c}</th>
+                                    <th key={ci} className="px-4 py-3 text-left font-semibold text-gray-800">{c}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-800">
+                        <tbody className="divide-y divide-gray-200">
                             {table.rows.map((r: string[], ri: number) => (
-                                <tr key={ri} className="hover:bg-[#202224] transition-colors">
+                                <tr key={ri} className="hover:bg-gray-50 transition-colors">
                                     {r.map((cell: string, ci: number) => (
-                                        <td key={ci} className={`px-4 py-3 leading-relaxed text-gray-400 ${ci === 0 ? 'font-medium text-gray-300' : ''}`}>{cell}</td>
+                                        <td key={ci} className={`px-4 py-3 leading-relaxed text-gray-600 ${ci === 0 ? 'font-medium text-gray-900' : ''}`}>{cell}</td>
                                     ))}
                                 </tr>
                             ))}
@@ -406,12 +406,12 @@ function CheatSheetBlock({ data }: { data: any }) {
             {/* Interview Traps */}
             {data.interviewTraps && (
                 <div>
-                    <h3 className="text-xl font-bold text-white mb-4 border-b border-gray-800 pb-2">Interview Traps</h3>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2">Interview Traps</h3>
                     <div className="space-y-4">
                         {data.interviewTraps.map((t: any, i: number) => (
-                            <div key={i} className="p-5 border border-red-900/30 bg-red-950/10 rounded-lg">
-                                <p className="text-sm font-semibold text-red-400 mb-2">Trap: "{t.trap}"</p>
-                                <p className="text-sm text-gray-400 leading-relaxed"><span className="text-gray-300 font-semibold">Answer:</span> {t.answer}</p>
+                            <div key={i} className="p-5 border border-red-200 bg-red-50 rounded-lg">
+                                <p className="text-sm font-semibold text-red-700 mb-2">Trap: "{t.trap}"</p>
+                                <p className="text-sm text-gray-700 leading-relaxed"><span className="text-gray-900 font-semibold">Answer:</span> {t.answer}</p>
                             </div>
                         ))}
                     </div>

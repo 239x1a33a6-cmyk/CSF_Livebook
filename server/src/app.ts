@@ -10,6 +10,8 @@ import modulesRoutes from './routes/modules.routes';
 import conceptsRoutes from './routes/concepts.routes';
 import assessmentsRoutes from './routes/assessments.routes';
 import usersRoutes from './routes/users.routes';
+import adminRoutes from './routes/admin.routes';
+import path from 'path';
 
 export function createApp() {
     const app = express();
@@ -34,6 +36,9 @@ export function createApp() {
         res.json({ success: true, data: { status: 'ok', timestamp: new Date().toISOString() } });
     });
 
+    // ── Static Files ─────────────────────────────────────────────────────────────
+    app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
     // ── Routes ───────────────────────────────────────────────────────────────────
     app.use('/api/auth', authRoutes);
     app.use('/api/subjects', subjectsRoutes);
@@ -41,6 +46,7 @@ export function createApp() {
     app.use('/api/concepts', conceptsRoutes);
     app.use('/api/assessments', assessmentsRoutes);
     app.use('/api/users', usersRoutes);
+    app.use('/api/admin', adminRoutes);
 
     // ── 404 ──────────────────────────────────────────────────────────────────────
     app.use((_req, res) => {

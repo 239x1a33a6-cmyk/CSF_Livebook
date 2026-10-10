@@ -35,6 +35,10 @@ export const conceptsService = {
         const { data } = await api.get(`/concepts/${conceptId}/content`);
         return data.data;
     },
+    async getResources(conceptId: string) {
+        const { data } = await api.get(`/concepts/${conceptId}/resources`);
+        return data.data;
+    },
     async getQuiz(conceptId: string) {
         const { data } = await api.get(`/concepts/${conceptId}/quiz`);
         return data.data;
